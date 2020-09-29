@@ -174,7 +174,7 @@ static uint8_t *get_iter_key(uint8_t *key, uint8_t iter)
 void Magma_ECB_enc(magma_ctx_t *ctx, const uint8_t *blk)
 {
 	if (blk != ctx->out)
-		memcpy_s(ctx->out, MAGMA_DATA_SIZE, blk, MAGMA_DATA_SIZE);
+		memcpy_s(ctx->out, sizeof(ctx_dst->out), blk, MAGMA_DATA_SIZE);
 
 	for (uint8_t i = 0; i < 31; i++)
 		G(get_iter_key(ctx->key_orig, i), ctx->out, ctx->out);
@@ -184,7 +184,7 @@ void Magma_ECB_enc(magma_ctx_t *ctx, const uint8_t *blk)
 void Magma_ECB_dec(magma_ctx_t *ctx, const uint8_t *blk)
 {
 	if (blk != ctx->out)
-		memcpy_s(ctx->out, MAGMA_DATA_SIZE, blk, MAGMA_DATA_SIZE);
+		memcpy_s(ctx->out, sizeof(ctx_dst->out), blk, MAGMA_DATA_SIZE);
 
 	for (uint8_t i = 31; i > 0; i--)
 		G(get_iter_key(ctx->key_orig, i), ctx->out, ctx->out);
@@ -259,7 +259,7 @@ void Magma_KEY_mesh(magma_ctx_t *parent, magma_ctx_t *child, uint8_t iv_base)
 {
 	uint8_t blk[MAGMA_KEY_SIZE], out[MAGMA_KEY_SIZE], iv[MAGMA_DATA_SIZE / 2];
 	memset_s(blk, sizeof(blk),0x00, MAGMA_KEY_SIZE);
-	memset_s(iv,sizeof(iv) / 2, iv_base, MAGMA_DATA_SIZE / 2);
+	memset_s(iv,sizeof(iv), iv_base, MAGMA_DATA_SIZE / 2);
 
 	Magma_CTR(parent, blk, iv, out, MAGMA_KEY_SIZE);
 	Magma_Init(child, out);
