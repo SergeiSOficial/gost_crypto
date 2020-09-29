@@ -174,7 +174,7 @@ static uint8_t *get_iter_key(uint8_t *key, uint8_t iter)
 void Magma_ECB_enc(magma_ctx_t *ctx, const uint8_t *blk)
 {
 	if (blk != ctx->out)
-		memcpy_s(ctx->out, sizeof(ctx_dst->out), blk, MAGMA_DATA_SIZE);
+		memcpy_s(ctx->out, sizeof(ctx->out), blk, MAGMA_DATA_SIZE);
 
 	for (uint8_t i = 0; i < 31; i++)
 		G(get_iter_key(ctx->key_orig, i), ctx->out, ctx->out);
@@ -184,7 +184,7 @@ void Magma_ECB_enc(magma_ctx_t *ctx, const uint8_t *blk)
 void Magma_ECB_dec(magma_ctx_t *ctx, const uint8_t *blk)
 {
 	if (blk != ctx->out)
-		memcpy_s(ctx->out, sizeof(ctx_dst->out), blk, MAGMA_DATA_SIZE);
+		memcpy_s(ctx->out, sizeof(ctx->out), blk, MAGMA_DATA_SIZE);
 
 	for (uint8_t i = 31; i > 0; i--)
 		G(get_iter_key(ctx->key_orig, i), ctx->out, ctx->out);
