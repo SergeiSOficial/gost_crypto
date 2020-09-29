@@ -62,7 +62,7 @@ static void T(const uint8_t *in_data, uint8_t *out_data)
 
 static void g(const uint8_t *k, const uint8_t *a, uint8_t *out_data)
 {
-	uint8_t internal[MAGMA_BLOCK_SIZE];
+	static uint8_t internal[MAGMA_BLOCK_SIZE];
 	uint32_t out_data_32;
 
 	Add_32(a, k, internal);
@@ -84,9 +84,9 @@ static void g(const uint8_t *k, const uint8_t *a, uint8_t *out_data)
 
 static void G(const uint8_t *k, const uint8_t *a, uint8_t *out_data)
 {
-	uint8_t a_0[MAGMA_BLOCK_SIZE];
-	uint8_t a_1[MAGMA_BLOCK_SIZE];
-	uint8_t G[MAGMA_BLOCK_SIZE];
+	static uint8_t a_0[MAGMA_BLOCK_SIZE];
+	static uint8_t a_1[MAGMA_BLOCK_SIZE];
+	static uint8_t G[MAGMA_BLOCK_SIZE];
 
 	memcpy_s(a_0, sizeof(a_0), a + MAGMA_BLOCK_SIZE, MAGMA_BLOCK_SIZE);
 	memcpy_s(a_1, sizeof(a_1), a, MAGMA_BLOCK_SIZE);
@@ -100,9 +100,9 @@ static void G(const uint8_t *k, const uint8_t *a, uint8_t *out_data)
 
 static void G_Fin(const uint8_t *k, const uint8_t *a, uint8_t *out_data)
 {
-	uint8_t a_0[MAGMA_BLOCK_SIZE];
-	uint8_t a_1[MAGMA_BLOCK_SIZE];
-	uint8_t G[MAGMA_BLOCK_SIZE];
+	static uint8_t a_0[MAGMA_BLOCK_SIZE];
+	static uint8_t a_1[MAGMA_BLOCK_SIZE];
+	static uint8_t G[MAGMA_BLOCK_SIZE];
 
 	memcpy_s(a_0, sizeof(a_0), a + MAGMA_BLOCK_SIZE, MAGMA_BLOCK_SIZE);
 	memcpy_s(a_1, sizeof(a_1), a, MAGMA_BLOCK_SIZE);
@@ -137,7 +137,7 @@ void Magma_CP(magma_ctx_t *ctx_dst, magma_ctx_t *ctx_src)
 
 void Magma_Init(magma_ctx_t *ctx, const uint8_t *key)
 {
-	uint8_t data[MAGMA_DATA_SIZE];
+	static uint8_t data[MAGMA_DATA_SIZE];
 
 	memcpy_s(ctx->key_orig, sizeof(ctx->key_orig), key, MAGMA_KEY_SIZE);
 
@@ -193,8 +193,8 @@ void Magma_ECB_dec(magma_ctx_t *ctx, const uint8_t *blk)
 
 void Magma_CTR(magma_ctx_t *ctx, const uint8_t *blk, const uint8_t *iv, uint8_t *out, uint32_t len)
 {
-	uint32_t _len = 0, _delta = 0;
-	uint8_t tmp[MAGMA_DATA_SIZE];
+	static uint32_t _len = 0, _delta = 0;
+	static uint8_t tmp[MAGMA_DATA_SIZE];
 	memset_s(tmp, sizeof(tmp), 0x00, MAGMA_DATA_SIZE);
 	memcpy_s(tmp, sizeof(tmp), iv, MAGMA_DATA_SIZE / 2);
 
@@ -257,7 +257,7 @@ void Magma_MIC(magma_ctx_t *ctx, const uint8_t *blk, uint32_t len)
 
 void Magma_KEY_mesh(magma_ctx_t *parent, magma_ctx_t *child, uint8_t iv_base)
 {
-	uint8_t blk[MAGMA_KEY_SIZE], out[MAGMA_KEY_SIZE], iv[MAGMA_DATA_SIZE / 2];
+	static uint8_t blk[MAGMA_KEY_SIZE], out[MAGMA_KEY_SIZE], iv[MAGMA_DATA_SIZE / 2];
 	memset_s(blk, sizeof(blk),0x00, MAGMA_KEY_SIZE);
 	memset_s(iv,sizeof(iv), iv_base, MAGMA_DATA_SIZE / 2);
 
