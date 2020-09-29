@@ -193,7 +193,7 @@ void Magma_ECB_dec(magma_ctx_t *ctx, const uint8_t *blk)
 
 void Magma_CTR(magma_ctx_t *ctx, const uint8_t *blk, const uint8_t *iv, uint8_t *out, uint32_t len)
 {
-	static uint32_t _len = 0, _delta = 0;
+	uint32_t _len = 0, _delta = 0;
 	static uint8_t tmp[MAGMA_DATA_SIZE];
 	memset_s(tmp, sizeof(tmp), 0x00, MAGMA_DATA_SIZE);
 	memcpy_s(tmp, sizeof(tmp), iv, MAGMA_DATA_SIZE / 2);
