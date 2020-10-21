@@ -9,20 +9,20 @@
 #include "../crypto/magma_mgm.h"
 #include "../crypto/magma.h"
 
-void test(const uint8_t * data0, const uint8_t * data1, uint32_t len)
+void test(const uint8_t *data0, const uint8_t *data1, uint32_t len)
 {
 	uint32_t fail = 0;
 	for (uint32_t i = 0; i < len; i++)
 		if (data0[i] != data1[i])
 			fail++;
-	
+
 	if (fail)
 		printf(ANSI_COLOR_RED "TEST FAIL %d\n" ANSI_COLOR_RESET, fail);
 	else
 		printf(ANSI_COLOR_GREEN "TEST OK\n" ANSI_COLOR_RESET);
 }
 
-void print_bytes(const uint8_t * data, uint8_t len)
+void print_bytes(const uint8_t *data, uint8_t len)
 {
 	printf("0x");
 	for (uint8_t i = 0; i < len; i++)
@@ -35,7 +35,7 @@ void print_hash(stribog_ctx_t *ctx)
 	print_bytes(ctx->h, ctx->size ? STRIBOG_OUTPUT_SIZE_512 : STRIBOG_OUTPUT_SIZE_256);
 }
 
-void test_hash(stribog_ctx_t *ctx, const uint8_t * data)
+void test_hash(stribog_ctx_t *ctx, const uint8_t *data)
 {
 	test(ctx->h, data, ctx->size ? STRIBOG_OUTPUT_SIZE_512 : STRIBOG_OUTPUT_SIZE_256);
 }
@@ -47,7 +47,7 @@ int main(int argn, char *argc[])
 	stribog_ctx_t ctx_stribog;
 
 	Magma_Init(&ctx_magma, key);
-	
+
 	printf(ANSI_COLOR_MAGENTA "\nMagma tests\n" ANSI_COLOR_RESET);
 	printf("\nAdditional key 1\t");
 	print_bytes(ctx_magma.key_add1, sizeof(ctx_magma.key_add1));
@@ -55,7 +55,7 @@ int main(int argn, char *argc[])
 	print_bytes(ctx_magma.key_add2, sizeof(ctx_magma.key_add2));
 	printf("\n");
 
-	for(uint8_t i = 0; i < 5; i++)
+	for (uint8_t i = 0; i < 5; i++)
 	{
 		Magma_ECB_enc(&ctx_magma, data[i]);
 		printf("Encrypted message %d\t", i);
@@ -69,14 +69,14 @@ int main(int argn, char *argc[])
 
 		printf("Original message %d\t", i);
 		print_bytes(data[i], sizeof(ctx_magma.out));
-		
+
 		test(data[i], ctx_magma.out, sizeof(ctx_magma.out));
 		printf("\n");
 	}
-	
+
 	uint8_t data_data[MAGMA_DATA_SIZE * 4];
-	for(uint8_t i = 0; i < 4; i++)
-		memcpy(data_data + MAGMA_DATA_SIZE * i, data[i + 1], MAGMA_DATA_SIZE);
+	for (uint8_t i = 0; i < 4; i++)
+		memcpy_s(data_data + MAGMA_DATA_SIZE * i, data[i + 1], MAGMA_DATA_SIZE);
 	Magma_MIC(&ctx_magma, data_data, 32);
 	printf("MIC of message 4 block\t");
 	print_bytes(ctx_magma.out, 4);
@@ -123,37 +123,37 @@ int main(int argn, char *argc[])
 
 	uint8_t tmp[MAGMA_DATA_SIZE * 4];
 	uint8_t out[MAGMA_DATA_SIZE * 4];
-	memset(out, 0, MAGMA_DATA_SIZE * 4);
-	
-	for(uint8_t i = 0; i < 4; i++)
-		memcpy(&tmp[i * MAGMA_DATA_SIZE], data[1 + i], MAGMA_DATA_SIZE);
-	
+	memset_s(out, 0, MAGMA_DATA_SIZE * 4);
+
+	for (uint8_t i = 0; i < 4; i++)
+		memcpy_s(&tmp[i * MAGMA_DATA_SIZE], data[1 + i], MAGMA_DATA_SIZE);
+
 	Magma_CTR(&ctx_magma, tmp, data_ctr_iv, out, MAGMA_DATA_SIZE * 4);
 
 	printf(ANSI_COLOR_MAGENTA "\nCTR" ANSI_COLOR_RESET);
 	printf("\ninput:\n");
-	for(uint8_t i = 0; i < 4; i++)
+	for (uint8_t i = 0; i < 4; i++)
 		print_bytes(&tmp[i * MAGMA_DATA_SIZE], MAGMA_DATA_SIZE);
 
 	printf("\nencrypted:\n");
-	for(uint8_t i = 0; i < 4; i++)
+	for (uint8_t i = 0; i < 4; i++)
 		print_bytes(&out[i * MAGMA_DATA_SIZE], MAGMA_DATA_SIZE);
-	for(uint8_t i = 0; i < 4; i++)
+	for (uint8_t i = 0; i < 4; i++)
 		test(data_ctr_test[i + 1], &out[i * MAGMA_DATA_SIZE], MAGMA_DATA_SIZE);
 
-	memset(tmp, 0, MAGMA_DATA_SIZE * 4);
+	memset_s(tmp, 0, MAGMA_DATA_SIZE * 4);
 
 	Magma_CTR(&ctx_magma, out, data_ctr_iv, tmp, MAGMA_DATA_SIZE * 4);
 
 	printf("\ndecrypted:\n");
-	for(uint8_t i = 0; i < 4; i++)
+	for (uint8_t i = 0; i < 4; i++)
 		print_bytes(&tmp[i * MAGMA_DATA_SIZE], MAGMA_DATA_SIZE);
-	for(uint8_t i = 0; i < 4; i++)
+	for (uint8_t i = 0; i < 4; i++)
 		test(data[i + 1], &tmp[i * MAGMA_DATA_SIZE], MAGMA_DATA_SIZE);
 
-	memset(out, 0, MAGMA_DATA_SIZE * 4);
-	memcpy(tmp, data[0], MAGMA_DATA_SIZE);
-	
+	memset_s(out, 0, MAGMA_DATA_SIZE * 4);
+	memcpy_s(tmp, data[0], MAGMA_DATA_SIZE);
+
 	Magma_CTR(&ctx_magma, tmp, data_ctr_iv, out, MAGMA_DATA_SIZE);
 
 	printf(ANSI_COLOR_MAGENTA "\nCTR" ANSI_COLOR_RESET);
@@ -164,7 +164,7 @@ int main(int argn, char *argc[])
 	print_bytes(out, MAGMA_DATA_SIZE);
 	test(data_ctr_test[0], out, MAGMA_DATA_SIZE);
 
-	memset(tmp, 0, MAGMA_DATA_SIZE * 4);
+	memset_s(tmp, 0, MAGMA_DATA_SIZE * 4);
 
 	Magma_CTR(&ctx_magma, out, data_ctr_iv, tmp, MAGMA_DATA_SIZE);
 
@@ -180,7 +180,7 @@ int main(int argn, char *argc[])
 		magma_ctx_t ctx_magma_mgm;
 		Magma_Init(&ctx_magma_mgm, mgm_key[j]);
 		Magma_MGM(&ctx_magma_mgm, mgm_nonce[j], mgm_p[j], mgm_p_size[j], mgm_enc);
-		
+
 		printf("\ninput:\n");
 		print_bytes(mgm_p[j], mgm_p_size[j]);
 
@@ -193,9 +193,9 @@ int main(int argn, char *argc[])
 		printf("\ndecrypted:\n");
 		print_bytes(mgm_dec, mgm_p_size[j]);
 		test(mgm_p[j], mgm_dec, mgm_p_size[j]);
-		
+
 		Magma_MGM_MIC(&ctx_magma_mgm, mgm_nonce[j], mgm_test[j], mgm_a[j], mgm_p_size[j], mgm_a_size[j], mgm_t);
-		
+
 		printf("\nMIC:\n");
 		print_bytes(mgm_t, MAGMA_DATA_SIZE);
 		test(mgm_mic_test[j], mgm_t, MAGMA_DATA_SIZE);
@@ -212,10 +212,10 @@ int main(int argn, char *argc[])
 			flen[i] = 0;
 			continue;
 		}
-		fseek(file[i], 0, SEEK_END); 
+		fseek(file[i], 0, SEEK_END);
 		flen[i] = ftell(file[i]);
-		fseek(file[i], 0, SEEK_SET); 
-		
+		fseek(file[i], 0, SEEK_SET);
+
 		fdata[i] = malloc(flen[i]);
 		fread(fdata[i], 1, flen[i], file[i]);
 	}
@@ -243,6 +243,6 @@ int main(int argn, char *argc[])
 		print_bytes(mgm_t, MAGMA_DATA_SIZE);
 		test(mgm_t, mgm_mic_test_file[j], MAGMA_DATA_SIZE);
 	}
-	
+
 	return 1;
 }
